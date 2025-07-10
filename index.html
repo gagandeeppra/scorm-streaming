@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Sample SCORM Course with scorm-again</title>
+  <!-- <script src="/scorm_api.js"></script> -->
+</head>
+
+<body>
+  <h1>Sample SCORM Course</h1>
+  <button onclick="initializeSCORM()">Initialize SCORM</button>
+  <button onclick="setLessonStatus('completed')">Set Lesson Status: completed</button>
+  <button onclick="commitSCORM()">Commit</button>
+  <button onclick="finishSCORM()">Finish SCORM</button>
+  <pre id="output"></pre>
+
+  <script>
+    function log(msg) {
+      document.getElementById('output').textContent += msg + "\n";
+    }
+
+    function initializeSCORM() {
+      if (window.API && typeof window.API.LMSInitialize === "function") {
+        var result = window.API.LMSInitialize('');
+        log("LMSInitialize: " + result);
+      } else {
+        log("SCORM API not found!");
+      }
+    }
+
+    function setLessonStatus(status) {
+      if (window.API && typeof window.API.LMSSetValue === "function") {
+        var result = window.API.LMSSetValue('cmi.core.lesson_status', status);
+        log("LMSSetValue (cmi.core.lesson_status): " + result);
+      } else {
+        log("SCORM API not found!");
+      }
+    }
+
+    function commitSCORM() {
+      if (window.API && typeof window.API.LMSCommit === "function") {
+        var result = window.API.LMSCommit('');
+        log("LMSCommit: " + result);
+      } else {
+        log("SCORM API not found!");
+      }
+    }
+
+    function finishSCORM() {
+      if (window.API && typeof window.API.LMSFinish === "function") {
+        var result = window.API.LMSFinish('');
+        log("LMSFinish: " + result);
+      } else {
+        log("SCORM API not found!");
+      }
+    }
+  </script>
+</body>
+
+</html>

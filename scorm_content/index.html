@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://scormdispatch.co.uk/scormxd/scormxdv3-driver.js?v=250331"></script>
+		<title>Sexual Harassment Prevention Made Simple for Managers Course | trainingabc</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    </head>
+    <body style="margin: 0; overflow: hidden;">
+        <div class="container" id="wrapper" style="display: none;">
+            <div class="d-flex justify-content-center align-items-center" style="height:100vh">
+                <div class="alert alert-secondary w-50" role="alert">
+                    <h4 class="alert-heading">Select Language</h4>
+                    <div class="list-group" id="languages"></div>
+                </div>
+            </div>
+        </div>
+
+        <iframe id="sxdpackage_iframe" name="sxdpackage_iframe" style="width: 100%; height: 100vh; border: 0; display: none;" allow="fullscreen; autoplay" allowfullscreen></iframe>
+        <script>
+            var config = {
+                remoteUrl : "https://scormdispatch.co.uk",
+                contentUrl : "https://scormdispatch.co.uk/dispatch/scorm/course/a6ef3892-9e64-41e1-9d3f-363268bdc007/MTc0NDc2MTYwMA==/LEARNER_ID/LEARNER_NAME",
+            }
+            let driver = new ScormXDDriver("SCORM", "1.2");
+
+            let wrapper = document.getElementById("wrapper");
+
+            let loadConfig  = function(contentUrl, onDone) {
+                const url = contentUrl + '?f=config'
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", url);
+                xhr.onload = function (e) {
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        response = JSON.parse(xhr.responseText);
+                        console.log(response)
+
+                        if(response.error) {
+                            let iframe = document.getElementById("sxdpackage_iframe")
+                            iframe.src = config.remoteUrl + '/dispatch/scorm/course/show-error/' + response.error_data
+                            wrapper.style.display = 'none'
+                            iframe.style.display = 'block'
+                            return;
+                        }
+
+                        onDone(response)
+                    }
+                    else {
+                        onDone([])
+                    }
+                }
+                xhr.send();
+            }
+
+            driver.init(config, function(initData) {
+                console.log(initData)
+                let contentUrl = config.contentUrl.replace("LEARNER_ID", initData.student_id).replace("LEARNER_NAME", initData.student_name)
+                console.log("Content Url: " + contentUrl)
+
+                loadConfig(contentUrl, function(languages) {
+                    if(languages.length > 1){
+                        let currentLanguage = driver.getApi().GetValue("language")
+                        if(currentLanguage == "") {
+                                let html = ''
+                            languages.forEach((lang) => {
+                                html += `<a href="${contentUrl}?language=${lang}" data-language="${lang}" class="list-group-item list-group-item-action">${lang}</a>`
+                            })
+                            document.getElementById("languages").innerHTML = html;
+                            wrapper.style.display = 'block'
+
+                            document.addEventListener('click', function (event) {
+                                if (!event.target.matches('a.list-group-item')) return;
+                                event.preventDefault();
+                                let language = event.target.getAttribute("data-language")
+                                newContentUrl = contentUrl + "?language=" + language
+                                wrapper.style.display = 'none'
+                                document.getElementById("sxdpackage_iframe").style.display = 'block'
+
+                                driver.run("sxdpackage_iframe", newContentUrl, function() {
+                                    driver.getApi().SetValue("language", language)
+                                    driver.getApi().Commit()
+                                    console.log(driver.getApi().GetValue("language"))
+                                })
+                            })
+                        }
+                        else {
+                            wrapper.style.display = 'none'
+                            document.getElementById("sxdpackage_iframe").style.display = 'block'
+                            newContentUrl = contentUrl + "?language=" + currentLanguage
+                            driver.run("sxdpackage_iframe", newContentUrl)
+                        }
+                    }
+                    else{
+                        wrapper.style.display = 'none'
+                        document.getElementById("sxdpackage_iframe").style.display = 'block'
+                        driver.run("sxdpackage_iframe", contentUrl)
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>
