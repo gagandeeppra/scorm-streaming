@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Sample SCORM Course with scorm-again</title>
-  <!-- <script src="/scorm_api.js"></script> -->
+  <script src="/scorm_api.js"></script>
 </head>
 
 <body>
@@ -13,6 +13,11 @@
   <button onclick="setLessonStatus('completed')">Set Lesson Status: completed</button>
   <button onclick="commitSCORM()">Commit</button>
   <button onclick="finishSCORM()">Finish SCORM</button>
+  <br><br>
+  <button onclick="setSuspendData('test data 123')">Set Suspend Data</button>
+  <button onclick="getSuspendData()">Get Suspend Data</button>
+  <button onclick="clearOutput()">Clear Output</button>
+  <button onclick="debugSCORM()">Debug SCORM Data</button>
   <pre id="output"></pre>
 
   <script>
@@ -55,6 +60,66 @@
         log("SCORM API not found!");
       }
     }
+
+    function setSuspendData(data) {
+      if (window.API && typeof window.API.LMSSetValue === "function") {
+        var result = window.API.LMSSetValue('cmi.suspend_data', data);
+        log("LMSSetValue (cmi.suspend_data): " + result);
+        if (result === 'false') {
+          var errorCode = window.API.LMSGetLastError();
+          var errorString = window.API.LMSGetErrorString(errorCode);
+          log("Error Code: " + errorCode + " - " + errorString);
+        }
+      } else {
+        log("SCORM API not found!");
+      }
+    }
+
+    function getSuspendData() {
+      if (window.API && typeof window.API.LMSGetValue === "function") {
+        var result = window.API.LMSGetValue('cmi.suspend_data');
+        log("LMSGetValue (cmi.suspend_data): " + result);
+        return result;
+      } else {
+        log("SCORM API not found!");
+        return null;
+      }
+    }
+
+    function clearOutput() {
+      document.getElementById('output').textContent = "";
+    }
+
+    function debugSCORM() {
+      if (window.API) {
+        log("=== SCORM DEBUG INFO ===");
+        log("API Available: Yes");
+
+        // Test common SCORM elements
+        var elements = [
+          'cmi.core.lesson_status',
+          'cmi.core.student_id',
+          'cmi.core.student_name',
+          'cmi.suspend_data',
+          'cmi.core.score.raw',
+          'cmi.core.session_time'
+        ];
+
+        elements.forEach(function (element) {
+          var value = window.API.LMSGetValue(element);
+          log(element + ": '" + value + "'");
+        });
+
+        log("Last Error: " + window.API.LMSGetLastError());
+      } else {
+        log("SCORM API not found!");
+      }
+    }
+
+    // Initialize when page loads
+    window.addEventListener('load', function () {
+      log("Page loaded. Ready to test SCORM functions.");
+    });
   </script>
 </body>
 

@@ -97,10 +97,12 @@
         LMSSetValue: function (element, value) {
             if (!initialized) {
                 lastError = '301';
+                console.log('SCORM API ERROR: Not initialized when trying to set ' + element);
                 return 'false';
             }
             if (typeof element !== 'string') {
                 lastError = '201';
+                console.log('SCORM API ERROR: Invalid element type for ' + element);
                 return 'false';
             }
 
@@ -116,16 +118,33 @@
 
             if (readOnly.includes(element)) {
                 lastError = '403';
+                console.log('SCORM API ERROR: Element is read-only: ' + element);
                 return 'false';
             }
 
             if (scormData.hasOwnProperty(element)) {
+                // Special validation for suspend_data
+                if (element === 'cmi.suspend_data') {
+                    if (typeof value !== 'string') {
+                        lastError = '405';
+                        console.log('SCORM API ERROR: suspend_data must be a string, got: ' + typeof value);
+                        return 'false';
+                    }
+                    // SCORM 1.2 suspend_data has a 4096 character limit
+                    if (value.length > 4096) {
+                        lastError = '405';
+                        console.log('SCORM API ERROR: suspend_data exceeds 4096 character limit (' + value.length + ' characters)');
+                        return 'false';
+                    }
+                }
+
                 scormData[element] = value;
                 lastError = '0';
-                console.log('SCORM API: LMSSetValue(' + element + ', ' + value + ')');
+                console.log('SCORM API: LMSSetValue(' + element + ', ' + value + ') - SUCCESS');
                 return 'true';
             } else {
                 lastError = '201';
+                console.log('SCORM API ERROR: Invalid element: ' + element);
                 return 'false';
             }
         },
