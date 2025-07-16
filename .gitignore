@@ -1,2 +1,5 @@
 node_modules/
 scorm_content/
+scorm_content/**
+scorm_content/*
+*.zip

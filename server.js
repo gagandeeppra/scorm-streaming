@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = 3000;
-const SCORM_ZIP = 'HSI_SCORM12_osha_IntrotoPersonalSafety.zip';
+const SCORM_ZIP = 'HSI_SCORM20044th_snp-74-2_12and15PassengerVanDOTAuditInspectionsMicrolearning.zip';
 const SCORM_DIR = path.join(__dirname, 'scorm_content');
 
 // Middleware to parse JSON
