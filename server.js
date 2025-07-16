@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = 3000;
-const SCORM_ZIP = 'HSI_SCORM20044th_snp-74-2_12and15PassengerVanDOTAuditInspectionsMicrolearning.zip';
+const SCORM_ZIP = 'HSI_SCORM12_202-01_IntroductiontoBeltDriveMaintenance.zip';
 const SCORM_DIR = path.join(__dirname, 'scorm_content');
 
 // Middleware to parse JSON
@@ -51,16 +51,26 @@ app.use('/course', (req, res, next) => {
 
 // Function to start the server
 function startServer() {
-    // Serve SCORM static files
+    // Serve static files from the root directory (for index.html, etc.)
+    app.use(express.static(__dirname));
+
+    // Serve SCORM static files under /course path
     app.use('/course', express.static(SCORM_DIR));
 
-    // (Optional) Redirect root to course index.html
+    // Serve the main index.html file at /index.html
+    app.get('/index.html', (req, res) => {
+        res.sendFile(path.join(__dirname, 'index.html'));
+    });
+
+    // Redirect root to index.html (main test page)
     app.get('/', (req, res) => {
-        res.redirect('/course/index.html');
+        res.redirect('/index.html');
     });
 
     app.listen(PORT, () => {
         console.log(`SCORM server running at http://localhost:${PORT}`);
+        console.log(`Main test page: http://localhost:${PORT}/index.html`);
+        console.log(`SCORM course: http://localhost:${PORT}/course/index.html`);
     });
 }
 
