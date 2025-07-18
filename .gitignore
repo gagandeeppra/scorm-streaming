@@ -3,3 +3,4 @@ scorm_content/
 scorm_content/**
 scorm_content/*
 *.zip
+.env
