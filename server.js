@@ -36,7 +36,7 @@ const s3Client = new S3Client({
 });
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
-const SCORM_KEY_PREFIX = 'scorm/Diversity at the Workplace Course | QlickTrain_20250718130722/'; // Path prefix in S3 bucket
+const SCORM_KEY_PREFIX = 'scorm/Diversity at the Workplace Course | QlickTrain_20250722112230/'; // Path prefix in S3 bucket
 
 
 const app = express();
